@@ -1,11 +1,9 @@
 var sendMDC = require('./Middleware/sendMdc.js')
-var sendRj = sendMDC.sendRj
 var sendUDP = sendMDC.sendUDP
 
 // Env settings
 
 var hosts = "192.168.10.10"  //to be changed from Frontend settings?
-var port = 1515;
 var portUDP = 5000;
 
 var messageManager = (function () {
@@ -26,7 +24,7 @@ var messageManager = (function () {
         localMsgPort = tizen.messageport.requestLocalMessagePort(messagePortName);
         listenerId = localMsgPort.addMessagePortListener(onMessageReceived);
         
-        sendMessage("started");
+        sendCommand("started");
       
     };
 
@@ -41,8 +39,11 @@ var messageManager = (function () {
 
     function sendMessage (msg) {
         // sends logs to foreground application
-    
-        remoteMsgPort.sendMessage(msg);
+        var messageData = {
+            key: 'broadcast',
+            value: msg
+        }
+        remoteMsgPort.sendMessage([messageData]);
     };
 
     
@@ -52,34 +53,37 @@ var messageManager = (function () {
     
     function onMessageReceived(data) {
         sendMessage('BG service receive data: ' + JSON.stringify(data));
-
-
-        sendUDP(hosts, portUDP, data)
+        
+        //  sendUDP(hosts, portUDP, data)
         
 
-        // switch (data[0].key) {
-        // 	case 'runServer':
-        // 		sendMessage('runServer received');
-        // 		var http = require('http');
-        // 		http.createServer(function (req, res) {
-        // 			if(data[0].value == "empty") {
-        // 				res.write("Hello from background service");
-        //     		} else {
-        //     			res.write(data[0].value);
-        //     		}
-        // 			  res.end(); //end the response
-        // 			}).listen(8081); //the serverUDP object listens on port 8081
-        // 		break;
-        //     case 'test':
-        //         var str = "[SentViaMessagePort]Hello from background service!";
-        //         sendMessage(str);
-        //     	break;
+        switch (data[0].key) {
+        	case 'broadcast':
+                sendMessage('broadcast received: ' + data[0].value);
+                //sendUDP(hosts, portUDP, data)
+                break;
+            case 'runServer':
+        		sendMessage('runServer received');
+        		var http = require('http');
+        		http.createServer(function (req, res) {
+        			if(data[0].value == "empty") {
+        				res.write("Currently set Hosts:" + hosts);
+            		} else {
+            			res.write(data[0].value);
+            		}
+        			  res.end(); //end the response
+        			}).listen(8081); //the serverUDP object listens on port 8081
+        		break;
+            case 'test':
+                var str = "[SentViaMessagePort]Hello from background service!";
+                sendMessage(str);
+            	break;
 
-        //     case 'terminate':
-        //         close();
-        //         tizen.application.getCurrentApplication().exit();
-        //         break;
-        // }
+            case 'terminate':
+                close();
+                tizen.application.getCurrentApplication().exit();
+                break;
+        }
     };
 
     return {
