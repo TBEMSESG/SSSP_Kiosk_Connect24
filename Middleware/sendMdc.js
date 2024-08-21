@@ -8,10 +8,10 @@ function sendRj(host, port, hex) {
 		//console.log(host);
 		var obj = new Net.Socket();
 		obj.on('error', (err) => {
-            console.error(`Error with the connection: ${err.message}`);
+            console.error("Error with the connection: ${err.message}");
         });
 		obj.connect({ port: port, host: host } , () => {
-			console.log(`TCP connection established with the screen ${host} `);
+			console.log("TCP connection established with the screen ${host} ");
 			setTimeout( ()=> {
 				obj.write(hex,  () => {
 					obj.destroy();	

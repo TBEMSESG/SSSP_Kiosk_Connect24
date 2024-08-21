@@ -31,12 +31,14 @@ function launchService() {
   
   var messageManager = (function () {
     var messagePortName = "BG_SERVICE_COMMUNICATION";
-    var remoteMsgPort;
+    var remoteMsgPort = undefined;
     var localMsgPort;
     var watchId;
   
     function init() {
         console.log("messageManager.init");
+        
+        
         localMsgPort = tizen.messageport.requestLocalMessagePort(messagePortName);
         watchId = localMsgPort.addMessagePortListener(onMessageReceived);
   
@@ -50,14 +52,20 @@ function launchService() {
         );
         messageManager.runHTTPServer(); // Starting HTTP server
     }
-    function sendTest(msg) {
-        console.log("messageManager.sendTest called: " + msg);
+    function sendTest(msg, key) {
+        
         var messageData = {
-          key: "broadcast",
-          value: msg,
+          key: key || "broadcast",
+          value: msg || "none",
         };
-        remoteMsgPort.sendMessage([messageData]);
+        
+        console.log("messageManager.sendTest called with message: " + JSON.stringify(messageData));
+        
+        remoteMsgPort && remoteMsgPort.sendMessage([messageData]);
+    
     }
+    
+ 
   
     function runHTTPServer(msg) {
       console.log("messageManager.runHTTPServer");
@@ -90,10 +98,12 @@ function launchService() {
       console.log("[onMessageReceived] data: " + JSON.stringify(data));
       test.innerHTML += JSON.stringify(data) + "<br/>";
       if (data[0].value === "started") {
-        setTimeout(connectToRemote, 0); //due to performance tuning on Tz7.0 and the CPU priority change, function has to be invoked async
+    	console.log("received Started from Backend")
+        setTimeout( connectToRemote() ,10) ; //due to performance tuning on Tz7.0 and the CPU priority change, function has to be invoked async
         serviceLaunched = true;
       }
       if (data[0].value === "terminated") {
+    	console.log("received terminated from backend ... doing nothing atm...")
         localMsgPort.removeMessagePortListener(watchId);
         serviceLaunched = false;
       }
@@ -112,16 +122,18 @@ function launchService() {
   var init = function () {
       // TODO:: Do your initialization job
       console.log("init() called");
+      
       var comms = ["uno","due","tre", "quattro", "cinque", "sei", "sette","otto","nove","dieci","undici","dodici","tredici"];
+      
       test = document.querySelector(".test");
 
-      document.addEventListener("visibilitychange", function () {
-      if (document.hidden) {
+      //document.addEventListener("visibilitychange", function () {
+      //if (document.hidden) {
         // Something you want to do when hide or exit.
-      } else {
+      //} else {
         // Something you want to do when resume.
-      }
-    });
+      //}
+    //});
  
     
     // Listeners
@@ -142,25 +154,45 @@ function launchService() {
 
     var buttons = document.querySelectorAll(".button");
 
-    title.innerHTML = "riproviamo";
-
-
+    title.innerHTML = "init()Called";
+    
+    
     // Eventlisteners to call API
-    button1.addEventListener('click' , function () {title.innerHTML = "uno";} );
-    button2.addEventListener('click', function () {
-        
-      messageManager.sendTest(comms[1])
+    button1.addEventListener('click' ,  function () {
+      
+    	test.innerHTML += "clicked on " + comms[0] + "<br/>" 
+      
+      //modal.style.display = "block";
+      //modal.classList.add("fold-class");
+      messageManager.sendTest(comms[0], "myUDP");
     
     });
-    button3.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[2])});
-    button4.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[3])});
-    button5.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[4])});
-    button6.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[5])});
-    button7.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[6])});
-    button8.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[7])});
-    button9.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[8])});
-    button10.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[9])});
-    button11.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[10])});
+    button2.addEventListener('click', function () {
+      
+    	test.innerHTML += "clicked on " + comms[1] + "<br/>" 
+      
+      //modal.style.display = "block";
+      //modal.classList.add("fold-class");
+      messageManager.sendTest(comms[1], "myUDP");
+    
+    });
+    button3.addEventListener('click',  function () {
+    
+	test.innerHTML += "clicked on " + comms[2] + "<br/>" 
+  
+  //modal.style.display = "block";
+  //modal.classList.add("fold-class");
+  messageManager.sendTest(comms[2], "myUDP");
+
+});
+    //button4.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[3])});
+    //button5.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[4])});
+    //button6.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[5])});
+    //button7.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[6])});
+    //button8.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[7])});
+    //button9.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[8])});
+    //button10.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[9])});
+    //button11.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[10])});
 
 
 

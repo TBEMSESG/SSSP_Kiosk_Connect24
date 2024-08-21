@@ -1,9 +1,10 @@
-var sendMDC = require('./Middleware/sendMdc.js')
-var sendUDP = sendMDC.sendUDP
-
+//var sendMDC = require('./Middleware/sendMdc.js')
+//var sendUDP = sendMDC.sendUDP
+var dgram = require('dgram');
+ 
 // Env settings
 
-var hosts = "192.168.10.10"  //to be changed from Frontend settings?
+var hosts = "10.10.99.171"  //to be changed from Frontend settings?
 var portUDP = 5000;
 
 var messageManager = (function () {
@@ -54,37 +55,47 @@ var messageManager = (function () {
     function onMessageReceived(data) {
         sendMessage('BG service receive data: ' + JSON.stringify(data));
         
-        //  sendUDP(hosts, portUDP, data)
         
+        
+        if (data[0].key === "myUDP") {
+            sendMessage("myUDP Key received, going to sendUDP with comamand: " + data[0].value);
 
-        switch (data[0].key) {
-        	case 'broadcast':
-                sendMessage('broadcast received: ' + data[0].value);
-                //sendUDP(hosts, portUDP, data)
-                break;
-            case 'runServer':
-        		sendMessage('runServer received');
-        		var http = require('http');
-        		http.createServer(function (req, res) {
-        			if(data[0].value == "empty") {
-        				res.write("Currently set Hosts:" + hosts);
-            		} else {
-            			res.write(data[0].value);
-            		}
-        			  res.end(); //end the response
-        			}).listen(8081); //the serverUDP object listens on port 8081
-        		break;
-            case 'test':
-                var str = "[SentViaMessagePort]Hello from background service!";
-                sendMessage(str);
-            	break;
-
-            case 'terminate':
-                close();
-                tizen.application.getCurrentApplication().exit();
-                break;
+            try {
+                // Assuming `hosts` and `portUDP` are defined and valid
+                sendUDP(hosts, portUDP, data[0].value);
+                sendMessage("UDP message sent successfully.");
+            } catch (error) {
+                sendMessage("Failed to send UDP message: " + error.message);
+                console.error("UDP sending error: ", error);
+            }
         }
+        	
+        
     };
+    
+    function sendUDP(host, port, command) {
+        sendMessage("Invoked sendUDP with: host=" + host + ", port=" + port + ", command=" + command);
+
+        // Create a buffer from the command using the older Buffer constructor
+        var message = new Buffer(command);
+
+        sendMessage("Prepared message buffer: " + message + " with length: " + message.length);
+
+        // Create UDP socket
+        var socket = dgram.createSocket('udp4');
+        
+        sendMessage("Socket created...");
+
+        // Send the UDP message
+        socket.send(message, 0, message.length, port, host, function (err) {
+            if (err) {
+                sendMessage("Error sending UDP message: " + err.message);
+            } else {
+                sendMessage("UDP message sent successfully to " + host + ":" + port);
+            }
+            socket.close();
+        });
+    }
 
     return {
         init: init,
@@ -92,6 +103,9 @@ var messageManager = (function () {
         sendCommand: sendCommand
     }
 })();
+
+
+
 
 
 //Following functions are required for background service module
@@ -113,5 +127,6 @@ module.exports.onRequest = function () {
 };
 
 module.exports.onExit = function () {
+    messageManager.sendMessage("Service is exiting... ")
     messageManager.sendCommand("terminated")
 };
