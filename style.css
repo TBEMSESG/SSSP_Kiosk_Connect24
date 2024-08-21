@@ -2,6 +2,7 @@ body{
   margin: 0;
 }
 
+
 .control_grid {
   display: flex;
   flex-wrap: wrap;
@@ -28,6 +29,10 @@ body{
   background-color:rgba(255, 71, 71, 0.724);
 }
 
+.title {
+	display: flex;
+	width: 80%
+}
 .logo {
   display: inline-flex;
 /* width: 900px;
@@ -204,4 +209,8 @@ align-items: center; */
   color: #bbb;
   text-decoration: none;
   cursor: pointer;
+}
+
+.hidden {
+display: none;	
 }

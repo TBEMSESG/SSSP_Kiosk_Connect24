@@ -24,7 +24,7 @@ var messageManager = (function () {
         
         localMsgPort = tizen.messageport.requestLocalMessagePort(messagePortName);
         listenerId = localMsgPort.addMessagePortListener(onMessageReceived);
-        
+        sendMessage( hosts, "currentIP")
         sendCommand("started");
       
     };
@@ -38,10 +38,10 @@ var messageManager = (function () {
         remoteMsgPort.sendMessage([messageData]);
     };
 
-    function sendMessage (msg) {
+    function sendMessage (msg, key) {
         // sends logs to foreground application
         var messageData = {
-            key: 'broadcast',
+            key: key || 'broadcast',
             value: msg
         }
         remoteMsgPort.sendMessage([messageData]);
@@ -68,6 +68,12 @@ var messageManager = (function () {
                 sendMessage("Failed to send UDP message: " + error.message);
                 console.error("UDP sending error: ", error);
             }
+        }
+        
+        if (data[0].key === "settings") {
+            sendMessage("settings Key received, going to overwrite current targetip with: " + data[0].value);
+            hosts = data[0].value
+           
         }
         	
         

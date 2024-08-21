@@ -3,6 +3,10 @@ var serviceLaunched = false;
 var test;
 var temp;
 
+// counter
+var counter = 0
+var currentIP = ""
+  
 
 function launchService() {
     // Launch Service
@@ -96,12 +100,18 @@ function launchService() {
   
     function onMessageReceived(data) {
       console.log("[onMessageReceived] data: " + JSON.stringify(data));
-      test.innerHTML += JSON.stringify(data) + "<br/>";
+      //test.innerHTML += JSON.stringify(data) + "<br/>";
       if (data[0].value === "started") {
     	console.log("received Started from Backend")
         setTimeout( connectToRemote() ,10) ; //due to performance tuning on Tz7.0 and the CPU priority change, function has to be invoked async
         serviceLaunched = true;
       }
+      
+      if (data[0].key === "currentIP") {
+      	console.log("received currentIP from Backend: " + data[0].value )
+          currentIP = data[0].value
+
+        }
       if (data[0].value === "terminated") {
     	console.log("received terminated from backend ... doing nothing atm...")
         localMsgPort.removeMessagePortListener(watchId);
@@ -135,9 +145,30 @@ function launchService() {
       //}
     //});
  
-    
+
+   // getSubnmit from Settings: 
+      document.getElementById('myForm').addEventListener('submit', function(event) {
+          // Prevent the form from submitting in the traditional way
+          event.preventDefault();
+
+          // Get the value from the input field
+          var userInput = document.getElementById('userInput').value;
+          
+          if (userInput !== "") {
+        	  messageManager.sendTest(userInput, "settings");
+        	  currentIP = userInput
+        	  ipPlaceholder.innerHTML = currentIP
+          }
+          
+      });
+      
+      
+      
+      
     // Listeners
     var title = document.querySelector(".title");
+    var ipPlaceholder = document.getElementById("myIP");
+    var logoButton = document.querySelector(".logo");
     var button1 = document.querySelector(".item1");
     var button2 = document.querySelector(".item2");
     var button3 = document.querySelector(".item3");
@@ -154,13 +185,36 @@ function launchService() {
 
     var buttons = document.querySelectorAll(".button");
 
-    title.innerHTML = "init()Called";
+    ipPlaceholder.innerText = currentIP || "no  IP is Set"
+
     
+    // Check for logoclicks to open settings info 
+    // by clicking the logo fast 7 times, a small settings page opens to change the target IP address for the UDP commands
+    
+    logoButton.addEventListener("click", function () {
+    	
+    	console.log("counting ..." + counter);
+    	if (counter < 7){
+    		setTimeout( function () {counter = 0} , 3000 ) 
+
+    		counter ++
+    	}
+    	if (counter === 7) {
+    		title.classList.remove("hidden");
+    		setTimeout(function () {title.classList.add("hidden")}, 20000)
+    		counter = 0
+    	}
+    	
+    }		 
+    )
+    
+  	
+    		
+	
     
     // Eventlisteners to call API
     button1.addEventListener('click' ,  function () {
       
-    	test.innerHTML += "clicked on " + comms[0] + "<br/>" 
       
       //modal.style.display = "block";
       //modal.classList.add("fold-class");
@@ -169,7 +223,6 @@ function launchService() {
     });
     button2.addEventListener('click', function () {
       
-    	test.innerHTML += "clicked on " + comms[1] + "<br/>" 
       
       //modal.style.display = "block";
       //modal.classList.add("fold-class");
@@ -178,7 +231,6 @@ function launchService() {
     });
     button3.addEventListener('click',  function () {
     
-	test.innerHTML += "clicked on " + comms[2] + "<br/>" 
   
   //modal.style.display = "block";
   //modal.classList.add("fold-class");
@@ -216,7 +268,7 @@ function launchService() {
           tizen.application.getCurrentApplication().exit();
           break;
         default:
-          console.log("Key code : " + e.keyCode);
+          // console.log("Key code : " + e.keyCode);
           break;
       }
     });
