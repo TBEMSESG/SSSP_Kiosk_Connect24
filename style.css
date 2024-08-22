@@ -31,8 +31,12 @@ body{
 
 .title {
 	display: flex;
-	width: 80%
-}
+	width: 80%;
+ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 3rem;
+  text-align: center;
+  justify-content: center ;
+  }
 .logo {
   display: inline-flex;
 /* width: 900px;
@@ -113,6 +117,8 @@ align-items: center; */
 .item12 {
   background-image: url(./img/QR.png);
   background-size: contain;
+    background-repeat: no-repeat;
+  
   /* flex-shrink: 2; */
 }
 
