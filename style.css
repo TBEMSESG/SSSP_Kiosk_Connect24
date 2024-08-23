@@ -30,13 +30,25 @@ body{
 }
 
 .title {
-	display: flex;
-	width: 80%;
+	display: block;
  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 3rem;
   text-align: center;
   justify-content: center ;
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 30%; /* 30 height */
+  /* overflow: auto; Enable scroll if needed */
+  background-color:blue;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
   }
+  
 .logo {
   display: inline-flex;
 /* width: 900px;

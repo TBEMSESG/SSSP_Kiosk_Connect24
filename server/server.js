@@ -1,7 +1,7 @@
 //var sendMDC = require('./Middleware/sendMdc.js')
 //var sendUDP = sendMDC.sendUDP
 var dgram = require('dgram');
- 
+var http = require('http');
 // Env settings
 
 var hosts = "10.10.99.171"  //to be changed from Frontend settings?
@@ -26,9 +26,20 @@ var messageManager = (function () {
         listenerId = localMsgPort.addMessagePortListener(onMessageReceived);
         sendMessage( hosts, "currentIP")
         sendCommand("started");
+        //runServer();
       
     };
 
+    
+    
+    function runServer (data) {
+		http.createServer(function (req, res) {
+			res.write("simple test answer instad of settings: " + text + currentNumber);
+			res.end(); //end the response
+			}).listen(8081); //the serverUDP object listens on port 8081	
+    }
+    
+    
     function sendCommand (msg) {
         // send command to Foreground app, like started and terminated
         var messageData = {

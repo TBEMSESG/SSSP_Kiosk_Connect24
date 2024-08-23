@@ -29,11 +29,223 @@ function launchService() {
   }
 
 
-  function isEmpty(value) {
+function isEmpty(value) {
     return value == null || value.length === 0;
   }
   
-  var messageManager = (function () {
+
+// Printer Related functions:
+var Printer = {
+		  isPortOpen: false,
+		  getSerialPrintVersion: function () {
+		    var Version = null;
+		    try {
+		      Version = window.b2bapis.serialprint.getVersion();
+		    } catch (e) {
+		      console.log(
+		        "[SerialPrint API][getVersion] call syncFunction exception [" +
+		          e.code +
+		          "] name: " +
+		          e.name +
+		          " message: " +
+		          e.message
+		      );
+		    }
+		    if (null !== Version) {
+		      console.log(
+		        "[SerialPrint API][getVersion] call syncFunction type: " + Version
+		      );
+		    }
+		  },
+
+		  openSerialPrint: function () {
+		    console.log("[SerialPrint API][open] function call");
+		    if (Printer.isPortOpen == true) {
+		      console.log("Serial port is open");
+		      return;
+		    }
+		    var option = null;
+		    var result = false;
+		    option = {
+		      // First Data Terminal
+		    //  baudRate: 9600,
+		      // Bixolon Printer
+		      baudRate: 115200,
+		      parity: "NONE",
+		      dataBits: "BITS8",
+		      stopBits: "1",
+		    };
+
+		    console.log(option.baudRate);
+
+		    //	if (BANDRATE_STATUS) option.baudRate = 115200;
+
+		    var printPort = "PRINTERPORT1";
+
+		    function onlistener(printSerialData) {
+		      console.log(
+		        "[SerialPrint API] Print serial data is " +
+		          printSerialData.data +
+		          ", Print serial Port is === " +
+		          printSerialData.result
+		      );
+		      if (printSerialData.data == "00") {
+		        console.log("Paper status 00 - paper inside printer");
+		      } else if (printSerialData.data == "03") {
+		        console.log("Paper status 03 - no paper inside printer");
+		      }
+		    }
+		    try {
+		      console.log("BaudRate: " + option.baudRate);
+		      result = window.b2bapis.serialprint.open(printPort, option, onlistener);
+		      if (result == true) {
+		        console.log("[SerialPrint API]Success to open print serial port");
+		        Printer.isPortOpen = true;
+		      } else {
+		        console.log("[SerialPrint API]Fail to open print serial port" + result);
+		      }
+		    } catch (e) {
+		      /*if (!BANDRATE_STATUS) {
+		        BANDRATE_STATUS = true;
+		        openSerialPrint()
+		      }*/
+		      console.log(
+		        "[SerialPrint API][open] call syncFunction exception " +
+		          e.code +
+		          " " +
+		          e.errorName +
+		          " " +
+		          e.errorMessage
+		      );
+		    }
+		  },
+
+		  closeSerialPrint: function () {
+		    console.log("[SerialPrint API][close] function call");
+		    var result = false;
+		    var printPort = "PRINTERPORT1";
+
+		    try {
+		      result = window.b2bapis.serialprint.close(printPort);
+		      if (result == false) {
+		        console.log("[SerialPrint API]Fail to close print serial port");
+		      }
+		    } catch (e) {
+		      console.log(
+		        "[SerialPrint API][close] call syncFunction exception " +
+		          e.code +
+		          " " +
+		          e.errorName +
+		          " " +
+		          e.errorMessage
+		      );
+		    }
+		  },
+
+		  checkIfPaperInPrinter: function () {
+		    console.log("[SerialPrint API][checkIfPaperInPrinter] function call");
+		    var result = false;
+		    var printPort = "PRINTERPORT1";
+		    var command = "1b76";
+
+		    try {
+		      result = window.b2bapis.serialprint.writeData(
+		        printPort,
+		        command,
+		        command.length
+		      );
+		      console.log("[SerialPrint API][writeData_0] writeData size is " + result);
+		    } catch (e) {
+		      console.log(
+		        "[SerialPrint API][writeData] call syncFunction exception " +
+		          e.code +
+		          " " +
+		          e.errorName +
+		          " " +
+		          e.errorMessage
+		      );
+		    }
+		  },
+
+		  writeReceipt: function (message) {
+		    console.log("[SerialPrint API][write] function call");
+		    var receiptData, data;
+		    var result = false;
+		    var printPort = "PRINTERPORT1";
+		    if (message == undefined) {
+		      receiptData = Printer.generateReceiptData();
+		      data = Printer.stringToHexReceipt(receiptData);
+		    } else {
+		      data = Printer.stringToHexReceipt(message + "\n\n\n\n\n\n\n\n\n\n");
+		    }
+
+		    try {
+		      // console.log(data);
+		      result = window.b2bapis.serialprint.writeData(
+		        printPort,
+		        data,
+		        data.length
+		      );
+		      console.log("[SerialPrint API][writeData_0] writeData size is " + result);
+		    } catch (e) {
+		      console.log(
+		        "[SerialPrint API][writeData] call syncFunction exception " +
+		          e.code +
+		          " " +
+		          e.errorName +
+		          " " +
+		          e.errorMessage
+		      );
+		    }
+		  },
+
+		  generateReceiptData: function () {
+		    var d = new Date();
+		    var receiptData =
+		      "test message" +
+		      "                                          \n" +
+		      "                                          \n" +
+		      "                                          \n" +
+		      "                                          \n" +
+		      "                                          \n";
+
+		    return receiptData;
+		  },
+
+		  stringToHexReceipt: function (tmp) {
+		    var str = "";
+		    var tmp_len = tmp.length;
+		    var c;
+
+		    for (var i = 0; i < tmp_len; i += 1) {
+		      c = tmp.charCodeAt(i).toString(16);
+		      c == "a" ? (c = "0A") : null;
+		      str += c.toString(16);
+
+		      i == tmp_len - 1 ? (str += "1B69") : null;
+		    }
+		    return str;
+		  },
+
+		  numberSpaces: function (number) {
+		    var total = number.toFixed(2).toString().split(".");
+		    if (total[0].length == 1) {
+		      total[0] = "   " + total[0];
+		    } else if (total[0].length == 2) {
+		      total[0] = "  " + total[0];
+		    } else if (total[0].length == 3) {
+		      total[0] = " " + total[0];
+		    }
+		    total = total[0] + "." + total[1];
+		    return total;
+		  },
+		};
+
+// Closing Printer rlated part
+
+
+//Communication with service
+var messageManager = (function () {
     var messagePortName = "BG_SERVICE_COMMUNICATION";
     var remoteMsgPort = undefined;
     var localMsgPort;
@@ -54,7 +266,7 @@ function launchService() {
           serviceId,
           messagePortName
         );
-        messageManager.runHTTPServer(); // Starting HTTP server
+        //messageManager.runHTTPServer(); // Starting HTTP server
     }
     function sendTest(msg, key) {
         
@@ -68,9 +280,6 @@ function launchService() {
         remoteMsgPort && remoteMsgPort.sendMessage([messageData]);
     
     }
-    
- 
-  
     function runHTTPServer(msg) {
       console.log("messageManager.runHTTPServer");
       if (isEmpty(msg)) {
@@ -118,6 +327,8 @@ function launchService() {
         serviceLaunched = false;
       }
     }
+    
+    
   
     return {
       init: init,
@@ -129,7 +340,7 @@ function launchService() {
 
   
   //Initialize function
-  var init = function () {
+var init = function () {
       // TODO:: Do your initialization job
       console.log("init() called");
       
@@ -144,7 +355,9 @@ function launchService() {
         // Something you want to do when resume.
       //}
     //});
- 
+      
+      //Printer.openSerialPrint();
+      // Printer.checkIfPaperInPrinter();
 
    // getSubnmit from Settings: 
       document.getElementById('myForm').addEventListener('submit', function(event) {
@@ -237,14 +450,30 @@ function launchService() {
   messageManager.sendTest(comms[2], "myUDP");
 
 });
-    //button4.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[3])});
-    //button5.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[4])});
-    //button6.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[5])});
-    //button7.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[6])});
-    //button8.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[7])});
-    //button9.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[8])});
-    //button10.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[9])});
-    //button11.addEventListener('click', function () {remoteMsgPort.sendMessage(comms[10])});
+    button4.addEventListener('click', function () { messageManager.sendTest(comms[3], "myUDP");
+
+    });
+    button5.addEventListener('click', function () { messageManager.sendTest(comms[4], "myUDP");
+
+    });
+    button6.addEventListener('click', function () { messageManager.sendTest(comms[5], "myUDP");
+
+    });
+    button7.addEventListener('click', function () { messageManager.sendTest(comms[6], "myUDP");
+
+    });
+    button8.addEventListener('click', function () { messageManager.sendTest(comms[7], "myUDP");
+
+    });
+    button9.addEventListener('click', function () { messageManager.sendTest(comms[8], "myUDP");
+
+    });
+    button10.addEventListener('click', function () { messageManager.sendTest(comms[9], "myUDP");
+
+    });
+    button11.addEventListener('click', function () { messageManager.sendTest(comms[10], "myUDP");
+
+    });
 
 
 
