@@ -7,15 +7,10 @@
 <DigestValue>PU6WSmk0p7Qcu9VbzY7380qiUTkKvkChy6uyozvGaYMyxr3SmPlkUvqLXmNkDViiRwFdNu6dX8DQ
 xinDClrzJA==</DigestValue>
 </Reference>
-<Reference URI="builder.bat">
-<DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>6WZvz8w5yq/pe+2049CYQxsRAYVYT5eIuic5W9C35StsHxwSjvX9Kj3eBW8xfHseKVIY/d390QPl
-T1JroTS6XA==</DigestValue>
-</Reference>
 <Reference URI="config.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>3xXRq93ihtyQwAqvGrZncg9Uz/SkSa+iQ5YB+j5OkuDadY+ppaR28yU7T1UzfR/fCDnFPPIjtdEv
-PqRGfdYJ2Q==</DigestValue>
+<DigestValue>8NtzKLjO6OZgozVGI0NTspJWugrviadMTqH2gCitzyp13LMSf/YXD33X/EInRWhhl/g5VrGlNie+
+xCPzyLoe6Q==</DigestValue>
 </Reference>
 <Reference URI="icon.png">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
@@ -117,11 +112,6 @@ c2F0fSkRog==</DigestValue>
 <DigestValue>+MBDXwuLUTSu1vmhdW7YGikf4VZyiFxuv3SWksbrAC3e+jO8VNWEg7kmo8ucv8Z0iy0qOwwn0qmI
 mZRTqFNsxA==</DigestValue>
 </Reference>
-<Reference URI="js%2Fsocket.io.js">
-<DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
-<DigestValue>yYCcHstLu9OALvE6b6xKIi7z7Zszm8ufzTRIqNpERp1g3Yp3pdFc9EZPdf4/ZH3jdSMihi0sc57i
-pzufRnmMiQ==</DigestValue>
-</Reference>
 <Reference URI="listeners.js">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></DigestMethod>
 <DigestValue>i9jBEga+pcAkXEEw8ym5LjF4PYxTbXB+QjmrxQBUsg6q4mTIgecXyJ6M710EYnTX8snc2RNbiBgh
@@ -152,11 +142,11 @@ QY10fG1EWQ==</DigestValue>
 </Reference>
 </SignedInfo>
 <SignatureValue>
-RgtZi9CPgIcy0OpXzS3Gvf6S0rRi9w6FMR0HhwB3/eaH3xrmvxaL4gxy4H3nUj2M6VVH2n5sfjhY
-OZKHSKsPmQo1GIp9Zax7lt3HeOC7gZrMMibN5ig+o5oBITCuMI12N+Ngqh1Novu1TngjaIar1osw
-Kwm12DjOUSc1fIrx0dwYax/jB909Z8H61BiOYVItX3JlUBenfflExhZPmBVGyPz7aOgqrm1x0pps
-uI3IDz1YCBVj00t63GTwKv5mY1zq5W7sAXW5PBsBDoYJKOEcJ52GxWOlRA5QIMsNrsCYL4cEUQqQ
-Yitl+SPBC0fpJAe56KBXrLSV/Fb2xzgFC7WjZw==
+OjZ0IRBdmXyFYHYywjiSahWnwBavDLLCk1MWhpNK7YebcGTB7XJgvU8/qYnsCFZfvxa63HjoQtvQ
+1arubOuM+di3If4BZJNhC5XLzcsM2k6opBz9iuZMjXAFAMu3JjzMAOEK4GHD6LqlqlLUDA5hHWMb
+JcgDf9DWO09QfeNMhYjGlhY0UXTNP8BEh4W02G1vErOQT4mRIlLtXRCCK2N5aUSuICrQm96wCWP9
+v8rps3ien7Mc+ALIzyZphU4yaeTtMcxH4tqCRR9EKRwdpgO5irK6Meo+Xe+TE+Vtxx5Tpbz8HJnA
+ebPEcIKq8WB9in7n0iRR3tR6BPNJew+84GNBfQ==
 </SignatureValue>
 <KeyInfo>
 <X509Data>

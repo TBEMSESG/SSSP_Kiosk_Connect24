@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets"
-    id="http://yourdomain/CONNECTKiosk" version="1.0.0" viewmodes="maximized">
+<widget xmlns:tizen="http://tizen.org/ns/widgets" xmlns="http://www.w3.org/ns/widgets" id="https://vxtdev.a2016.dev/kiosk/" version="1.0.0" height="1920" width="1080" viewmodes="fullscreen">
     <access origin="*" subdomains="true"></access>
-    <tizen:application id="hlHpt0841o.CONNECTKiosk"
-        package="hlHpt0841o" required_version="4.0" />
-    <content
-        src="index.html" />
-    <feature name="http://tizen.org/feature/screen.size.normal.1080.1920" />
-    <icon
-        src="icon.png" />
+    <tizen:application id="hlHpt0841o.CONNECTKiosk" package="hlHpt0841o" required_version="2.3"/>
+    <author>Thomas</author>
+    <content src="index.html"/>
+    <description>DEmo App for CONNECT 2024</description>
+    <feature name="http://tizen.org/feature/screen.size.normal.1080.1920"/>
+    <icon src="icon.png"/>
     <name>CONNECTKiosk</name>
     <tizen:privilege name="http://tizen.org/privilege/internet"/>
     <tizen:privilege name="http://tizen.org/privilege/push"/>
@@ -26,16 +24,13 @@
     <tizen:privilege name="http://developer.samsung.com/privilege/productinfo"/>
     <tizen:privilege name="http://developer.samsung.com/privilege/b2bbarcode"/>
     <tizen:privilege name="http://developer.samsung.com/privilege/microphone"/>
-    <tizen:profile name="tv-samsung" />
-    <tizen:service
-        id="hlHpt0841o.SampleBGService">
-        <tizen:content src="server/server.js" />
+    <tizen:profile name="tv-samsung"/>
+    <tizen:service id="hlHpt0841o.SampleBGService">
+        <tizen:content src="server/server.js"/>
         <tizen:name>SampleBGService</tizen:name>
         <tizen:description>Service Application</tizen:description>
-        <tizen:metadata key="meta-key" value="meta-value" />
-        <tizen:category name="http://tizen.org/category/service" />
+        <tizen:metadata key="meta-key" value="meta-value"/>
+        <tizen:category name="http://tizen.org/category/service"/>
     </tizen:service>
-    <tizen:setting
-        screen-orientation="portrait" context-menu="enable" background-support="disable"
-        encryption="disable" install-location="auto" hwkey-event="enable" />
+    <tizen:setting screen-orientation="portrait" context-menu="enable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable"/>
 </widget>
