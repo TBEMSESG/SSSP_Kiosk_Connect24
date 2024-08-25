@@ -5,9 +5,14 @@ var temp;
 
 // counter
 var counter = 0
-var currentIP = ""
-  
 
+var currentIP = webapis.network.getIp() || "unknown"
+var targetIP = ""
+
+var ipTarget = document.getElementById("targetIP");
+	
+	
+	
 function launchService() {
     // Launch Service
     tizen.application.launchAppControl(
@@ -316,10 +321,15 @@ var messageManager = (function () {
         serviceLaunched = true;
       }
       
+      if (data[0].key === "targetIP") {
+        	console.log("received targetIP from Backend: " + data[0].value )
+            targetIP = data[0].value
+            ipTarget.innerText = targetIP
+          }
+      
       if (data[0].key === "currentIP") {
       	console.log("received currentIP from Backend: " + data[0].value )
           currentIP = data[0].value
-
         }
       if (data[0].value === "terminated") {
     	console.log("received terminated from backend ... doing nothing atm...")
@@ -359,21 +369,7 @@ var init = function () {
       //Printer.openSerialPrint();
       // Printer.checkIfPaperInPrinter();
 
-   // getSubnmit from Settings: 
-      document.getElementById('myForm').addEventListener('submit', function(event) {
-          // Prevent the form from submitting in the traditional way
-          event.preventDefault();
-
-          // Get the value from the input field
-          var userInput = document.getElementById('userInput').value;
-          
-          if (userInput !== "") {
-        	  messageManager.sendTest(userInput, "settings");
-        	  currentIP = userInput
-        	  ipPlaceholder.innerHTML = currentIP
-          }
-          
-      });
+ 
       
       
       
@@ -398,9 +394,24 @@ var init = function () {
 
     var buttons = document.querySelectorAll(".button");
 
-    ipPlaceholder.innerText = currentIP || "no  IP is Set"
+    ipPlaceholder.innerText = currentIP || "unknown"    
+    	
+    	  // getSubnmit from Settings: 
+        document.getElementById('myForm').addEventListener('submit', function(event) {
+            // Prevent the form from submitting in the traditional way
+            event.preventDefault();
 
-    
+            // Get the value from the input field
+            var userInput = document.getElementById('userInput').value;
+            
+            if (userInput !== "") {
+          	  messageManager.sendTest(userInput, "settings");
+          	  targetIP = userInput
+          	  ipTarget.innerText = currentIP
+            }
+            
+        });    	
+    	
     // Check for logoclicks to open settings info 
     // by clicking the logo fast 7 times, a small settings page opens to change the target IP address for the UDP commands
     
@@ -508,3 +519,5 @@ var init = function () {
   };
   // window.onload can work without <body onload="">
   window.onload = init;
+  
+  //module.exports = currentIP

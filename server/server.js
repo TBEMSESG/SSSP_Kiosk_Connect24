@@ -2,6 +2,9 @@
 //var sendUDP = sendMDC.sendUDP
 var dgram = require('dgram');
 var http = require('http');
+var fs = require('fs');
+var path = require('path');
+
 // Env settings
 
 var hosts = "10.10.99.171"  //to be changed from Frontend settings?
@@ -24,20 +27,79 @@ var messageManager = (function () {
         
         localMsgPort = tizen.messageport.requestLocalMessagePort(messagePortName);
         listenerId = localMsgPort.addMessagePortListener(onMessageReceived);
-        sendMessage( hosts, "currentIP")
+        sendMessage( hosts, "targetIP")
         sendCommand("started");
         //runServer();
       
     };
 
+    //Create webserver for settings
+    var server = http.createServer(function(req, res) {
+    	  // Serve the index.html file
+    	  if (req.url === '/') {
+    	    var filePath = path.join(__dirname, '..' , 'settings', 'settings.html');
+    	    fs.readFile(filePath, 'utf8', function(err, data) {
+    	      if (err) {
+    	        res.writeHead(500, { 'Content-Type': 'text/plain' });
+    	        res.end('Server Error' + err);
+    	        return;
+    	      }
+    	      res.writeHead(200, { 'Content-Type': 'text/html' });
+    	      res.end(data);
+    	    });
+    	  }
+    	// Serve the css file (adjust path accordingly if needed)
+    	  else if (req.url === '/style.css') {
+    	    var filePath = path.join(__dirname, '..', 'settings', 'style.css');
+    	    fs.readFile(filePath, 'utf8', function(err, data) {
+    	      if (err) {
+    	        res.writeHead(500, { 'Content-Type': 'text/plain' });
+    	        res.end('Server Error');
+    	        return;
+    	      }
+    	      res.writeHead(200, { 'Content-Type': 'application/javascript' });
+    	      res.end(data);
+    	    });
+    	  }
+    	  // Serve the script.js file (adjust path accordingly if needed)
+    	  else if (req.url === '/settings.js') {
+    	    var filePath = path.join(__dirname, '..', 'settings', 'settings.js');
+    	    fs.readFile(filePath, 'utf8', function(err, data) {
+    	      if (err) {
+    	        res.writeHead(500, { 'Content-Type': 'text/plain' });
+    	        res.end('Server Error');
+    	        return;
+    	      }
+    	      res.writeHead(200, { 'Content-Type': 'application/css' });
+    	      res.end(data);
+    	    });
+    	  }
+      	  // Serve the listeners.js file (adjust path accordingly if needed)
+    	  else if (req.url === '/listeners.js') {
+    	    var filePath = path.join(__dirname, '..', 'listeners.js');
+    	    fs.readFile(filePath, 'utf8', function(err, data) {
+    	      if (err) {
+    	        res.writeHead(500, { 'Content-Type': 'text/plain' });
+    	        res.end('Server Error');
+    	        return;
+    	      }
+    	      res.writeHead(200, { 'Content-Type': 'application/javascript' });
+    	      res.end(data);
+    	    });
+    	  }
+    	  // Handle 404 - File Not Found
+    	  else {
+    	    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    	    res.end('404 Not Found');
+    	  }
+    	});
+
+    	// Start the server
+//    server.listen(3000, function() {
+//    	  sendMessage('Server is running on http://localhost:3000');
+//    	});
     
-    
-    function runServer (data) {
-		http.createServer(function (req, res) {
-			res.write("simple test answer instad of settings: " + text + currentNumber);
-			res.end(); //end the response
-			}).listen(8081); //the serverUDP object listens on port 8081	
-    }
+  
     
     
     function sendCommand (msg) {
